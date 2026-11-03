@@ -17,7 +17,7 @@ public abstract class Campeon {
         this.descripcion = descripcion;
     }
 
-    // cada hijo dice cual es
+    // tipo
     public abstract String getTipo();
 
     public String getNombre() {

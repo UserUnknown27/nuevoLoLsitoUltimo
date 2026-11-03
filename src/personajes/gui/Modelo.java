@@ -33,7 +33,12 @@ public class Modelo {
         lista.add(crear(tipo, nombre, region, fecha, mana, descripcion));
     }
 
-    // hace el campeon segun el tipo
+    // modificar
+    public void modificar(int posicion, String tipo, String nombre, String region, LocalDate fecha, int mana, String descripcion) {
+        lista.set(posicion, crear(tipo, nombre, region, fecha, mana, descripcion));
+    }
+
+    // crear
     private Campeon crear(String tipo, String nombre, String region, LocalDate fecha, int mana, String descripcion) {
         if (tipo.equals("Mago")) {
             return new Mago(nombre, region, fecha, mana, descripcion);
@@ -50,7 +55,7 @@ public class Modelo {
         }
     }
 
-    // si no esta devuelve null
+    // buscar
     public Campeon buscar(String nombre) {
         for (Campeon c : lista) {
             if (c.getNombre().equalsIgnoreCase(nombre)) {
@@ -68,7 +73,7 @@ public class Modelo {
         doc.appendChild(raiz);
 
         for (Campeon c : lista) {
-            // la etiqueta es el tipo
+            // etiqueta
             Element e = doc.createElement(c.getTipo());
             raiz.appendChild(e);
 

@@ -8,5 +8,5 @@ out/
 .idea/shelf/
 
 # Ficheros que genera el programa al usarlo
-campeones.xml
+# campeones.xml si se sube (son los ejemplos)
 campeones.conf

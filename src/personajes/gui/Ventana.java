@@ -20,6 +20,7 @@ public class Ventana {
     public JTextField txtMana;
     public JTextArea txtDescripcion;
     public JButton btnNuevo;
+    public JButton btnModificar;
     public JButton btnMostrar;
     public JButton btnExportar;
     public JButton btnImportar;
@@ -31,7 +32,7 @@ public class Ventana {
     public Ventana() {
         frame = new JFrame("LoL");
         frame.setContentPane(panel1);
-        // la X la maneja el controlador
+        // cerrar
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         lista.setModel(datosLista);

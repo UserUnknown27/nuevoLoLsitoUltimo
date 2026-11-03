@@ -13,7 +13,7 @@ public class Util {
         JOptionPane.showMessageDialog(null, texto, titulo, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // devuelve YES_OPTION si dice que si
+    // preguntar
     public static int preguntar(String texto, String titulo) {
         return JOptionPane.showConfirmDialog(null, texto, titulo, JOptionPane.YES_NO_OPTION);
     }

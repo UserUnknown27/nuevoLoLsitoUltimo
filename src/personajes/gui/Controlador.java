@@ -19,19 +19,33 @@ public class Controlador implements ActionListener, ListSelectionListener {
     private Modelo modelo;
     private Random random = new Random();
 
+    // archivo
+    private File archivo = new File("campeones.xml");
+
     public Controlador(Ventana ventana, Modelo modelo) {
         this.ventana = ventana;
         this.modelo = modelo;
 
+        // cargar datos
+        if (archivo.exists()) {
+            try {
+                modelo.importar(archivo);
+                actualizar();
+            } catch (Exception e) {
+                Util.error("No se pudo leer campeones.xml");
+            }
+        }
+
         azar();
 
         ventana.btnNuevo.addActionListener(this);
+        ventana.btnModificar.addActionListener(this);
         ventana.btnMostrar.addActionListener(this);
         ventana.btnExportar.addActionListener(this);
         ventana.btnImportar.addActionListener(this);
         ventana.lista.addListSelectionListener(this);
 
-        // al cerrar pregunta
+        // cerrar
         ventana.frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int resp = Util.preguntar("Quieres salir?", "Salir");
@@ -42,11 +56,13 @@ public class Controlador implements ActionListener, ListSelectionListener {
         });
     }
 
-    // cuando pulsa un boton
+    // botones
     public void actionPerformed(ActionEvent e) {
         String boton = e.getActionCommand();
         if (boton.equals("Nuevo")) {
             nuevo();
+        } else if (boton.equals("Modificar")) {
+            modificar();
         } else if (boton.equals("Mostrar")) {
             mostrar();
         } else if (boton.equals("Exportar")) {
@@ -56,7 +72,7 @@ public class Controlador implements ActionListener, ListSelectionListener {
         }
     }
 
-    // cuando elige uno de la lista
+    // lista
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting()) {
             return;
@@ -94,8 +110,52 @@ public class Controlador implements ActionListener, ListSelectionListener {
         String descripcion = ventana.txtDescripcion.getText().trim();
         modelo.agregar(tipo(), nombre, region, fecha, mana, descripcion);
 
+        guardar();
         actualizar();
         limpiar();
+    }
+
+    private void modificar() {
+        // comprobar
+        int posicion = ventana.lista.getSelectedIndex();
+        if (posicion == -1) {
+            Util.error("Elige un campeon de la lista");
+            return;
+        }
+
+        String nombre = ventana.txtNombre.getText().trim();
+        String manaTexto = ventana.txtMana.getText().trim();
+        LocalDate fecha = ventana.fecha.getDate();
+
+        if (nombre.isEmpty() || manaTexto.isEmpty() || fecha == null) {
+            Util.error("Faltan datos");
+            return;
+        }
+
+        int mana;
+        try {
+            mana = Integer.parseInt(manaTexto);
+        } catch (NumberFormatException ex) {
+            Util.error("El mana tiene que ser un numero");
+            return;
+        }
+
+        // comprobar nombre
+        for (int i = 0; i < modelo.getLista().size(); i++) {
+            if (i != posicion && modelo.getLista().get(i).getNombre().equalsIgnoreCase(nombre)) {
+                Util.error("Ese nombre ya es de otro campeon");
+                return;
+            }
+        }
+
+        String region = (String) ventana.comboRegion.getSelectedItem();
+        String descripcion = ventana.txtDescripcion.getText().trim();
+        modelo.modificar(posicion, tipo(), nombre, region, fecha, mana, descripcion);
+
+        guardar();
+        actualizar();
+        // seleccionar
+        ventana.lista.setSelectedIndex(posicion);
     }
 
     private void mostrar() {
@@ -119,13 +179,13 @@ public class Controlador implements ActionListener, ListSelectionListener {
     private void exportar() {
         JFileChooser fichero = Util.elegirFichero();
         if (fichero.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File archivo = fichero.getSelectedFile();
-            // si no tiene .xml se lo pongo
-            if (!archivo.getName().endsWith(".xml")) {
-                archivo = new File(archivo.getPath() + ".xml");
+            File f = fichero.getSelectedFile();
+            // extension
+            if (!f.getName().endsWith(".xml")) {
+                f = new File(f.getPath() + ".xml");
             }
             try {
-                modelo.exportar(archivo);
+                modelo.exportar(f);
             } catch (Exception ex) {
                 Util.error("Error al exportar");
             }
@@ -144,7 +204,16 @@ public class Controlador implements ActionListener, ListSelectionListener {
         }
     }
 
-    // el tipo que esta marcado
+    // guardar
+    private void guardar() {
+        try {
+            modelo.exportar(archivo);
+        } catch (Exception ex) {
+            Util.error("No se pudo guardar en el xml");
+        }
+    }
+
+    // tipo
     private String tipo() {
         if (ventana.radioMago.isSelected()) {
             return "Mago";
@@ -161,7 +230,7 @@ public class Controlador implements ActionListener, ListSelectionListener {
         }
     }
 
-    // marca el tipo que le paso
+    // poner tipo
     private void ponerTipo(String tipo) {
         if (tipo.equals("Mago")) {
             ventana.radioMago.setSelected(true);
@@ -187,7 +256,7 @@ public class Controlador implements ActionListener, ListSelectionListener {
         ventana.txtDescripcion.setText(c.getDescripcion());
     }
 
-    // fecha y mana al azar
+    // datos al azar
     private void azar() {
         LocalDate dia = LocalDate.of(2009, 2, 21).plusDays(random.nextInt(6000));
         ventana.fecha.setDate(dia);

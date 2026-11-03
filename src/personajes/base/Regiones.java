@@ -1,6 +1,6 @@
 package personajes.base;
 
-// regiones del lore
+// regiones
 public class Regiones {
     public static final String[] LISTA = {
             "Demacia",
