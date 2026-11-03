@@ -1,0 +1,12 @@
+# Salida de compilacion de IntelliJ
+out/
+*.class
+
+# Archivos personales del IDE
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/shelf/
+
+# Ficheros que genera el programa al usarlo
+campeones.xml
+campeones.conf
